@@ -40,7 +40,7 @@ export const Home = () => {
   const configApi = useConfig()
 
   const [preset, setPreset] = useState<PedalyzePreset>({
-    name: '',
+    name: 'Default Name',
     buttons: Array(12)
       .fill(0)
       .map((_, i) => ({
@@ -101,6 +101,7 @@ export const Home = () => {
 
         <Panel defaultSize={60}>
           <SideBar
+            preset={preset}
             buttonHandlers={{
               upload: { onClick: onUpload },
               save: { onClick: onSave },

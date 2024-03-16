@@ -10,10 +10,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { IconButton, Tooltip } from '@mui/material'
 
 import { StyledPanel, StyledSideBar } from './SideBar.styled'
+import { PedalyzePreset } from 'src/hooks'
+import { LockedInput } from './../../../../components'
 
 type ButtonKey = 'upload' | 'save' | 'archive' | 'config'
 
 export const SideBar: React.FC<{
+  preset: PedalyzePreset
   buttonHandlers: Partial<
     Record<
       ButtonKey,
@@ -49,5 +52,7 @@ export const SideBar: React.FC<{
         </IconButton>
       </Tooltip>
     </StyledPanel>
+
+    <LockedInput label="Nome da configuração" value="test" />
   </StyledSideBar>
 )
