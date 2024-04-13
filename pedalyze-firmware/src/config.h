@@ -8,3 +8,12 @@
 
 // Menu
 #define MAX_TABS 1
+
+// Matrix
+#define MATRIX_LENGTH 12
+
+// Encoder
+#define ENCODER_OPTIMIZE_INTERRUPTS
+#define ENCODER_CLK 5
+#define ENCODER_DT 7
+#define ENCODER_SW -1
