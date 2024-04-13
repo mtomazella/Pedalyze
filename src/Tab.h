@@ -45,6 +45,9 @@ public:
       else
         processEncoder = true;
     }
+
+    state->menuSwitchPosition = event.menuSwitchPosition;
+    state->menuSwitchReading = event.menuSwitchReading;
   }
 
   void draw(State *state, Display *display)
@@ -62,7 +65,11 @@ public:
     display->setTextSize(1);
     display->setTextColor(BLACK);
     display->setCursor(0, 0);
-    display->println(state->T_xOffset);
+    display->print(state->T_xOffset);
+    display->print(' ');
+    display->print(state->menuSwitchPosition);
+    display->print(' ');
+    display->print(state->menuSwitchReading);
     display->fillCircle(SCREEN_WIDTH / 2 + state->T_xOffset, SCREEN_HEIGHT / 2, 10, BLACK);
     display->display();
   }

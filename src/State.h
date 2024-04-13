@@ -7,4 +7,6 @@ public:
 
   // Test tab
   int T_xOffset = 0;
+  int menuSwitchPosition = 0;
+  int menuSwitchReading = 0;
 };

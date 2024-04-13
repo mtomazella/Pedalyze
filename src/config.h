@@ -17,3 +17,6 @@
 #define ENCODER_CLK 5
 #define ENCODER_DT 7
 #define ENCODER_SW -1
+
+// Menu switch
+#define MENU_SWITCH 9
