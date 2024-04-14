@@ -15,6 +15,7 @@ public:
   int matrixClicks[MATRIX_LENGTH];
   int matrixDoubleClicks[MATRIX_LENGTH];
   int menuSwitchPosition = 0;
+  bool menuSwitchPositionChanged = false;
   int menuSwitchReading = 0;
 
   InputEvent()
@@ -31,6 +32,7 @@ public:
     encoderButtonClicks = 0;
     encoderButtonDoubleClicks = 0;
     menuSwitchPosition = 0;
+    menuSwitchPositionChanged = false;
     menuSwitchReading = 0;
 
     for (int i = 0; i < MATRIX_LENGTH; i++)
@@ -49,6 +51,7 @@ public:
     copiedEvent.encoderButtonClicks = this->encoderButtonClicks;
     copiedEvent.encoderButtonDoubleClicks = this->encoderButtonDoubleClicks;
     copiedEvent.menuSwitchPosition = this->menuSwitchPosition;
+    copiedEvent.menuSwitchPositionChanged = this->menuSwitchPositionChanged;
     copiedEvent.menuSwitchReading = this->menuSwitchReading;
 
     for (int i = 0; i < MATRIX_LENGTH; i++)
@@ -68,20 +71,23 @@ public:
   Encoder encoder = Encoder(ENCODER_DT, ENCODER_CLK);
   InputEvent event;
 
-  void sense()
+  InputEvent sense()
   {
     event.encoderDelta += encoder.readAndReset();
 
     int menuSwitchReading = analogRead(MENU_SWITCH);
     int readingLimit1 = 1024 / 3;
     int readingLimit2 = 1024 / 3 * 2;
+    int newMenuSwitchPosition = 1;
     if (menuSwitchReading < readingLimit1)
-      event.menuSwitchPosition = 0;
+      newMenuSwitchPosition = 0;
     else if (menuSwitchReading < readingLimit2)
-      event.menuSwitchPosition = 2;
-    else
-      event.menuSwitchPosition = 1;
+      newMenuSwitchPosition = 2;
+    event.menuSwitchPositionChanged = event.menuSwitchPosition != newMenuSwitchPosition;
+    event.menuSwitchPosition = newMenuSwitchPosition;
     event.menuSwitchReading = menuSwitchReading;
+
+    return event.copy();
   }
 
   InputEvent process()

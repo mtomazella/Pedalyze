@@ -1,9 +1,11 @@
 #pragma once
 
+#include "config.h"
+
 class State
 {
 public:
-  int tabId = 0;
+  int tabId = INITIAL_TAB;
 
   // Test tab
   int T_xOffset = 0;

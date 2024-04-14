@@ -7,7 +7,8 @@
 #define SCREEN_ADDRESS 0x3C
 
 // Menu
-#define MAX_TABS 1
+#define MAX_TABS 4
+#define INITIAL_TAB 3
 
 // Matrix
 #define MATRIX_LENGTH 12

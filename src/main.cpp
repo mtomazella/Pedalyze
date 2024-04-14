@@ -4,6 +4,9 @@
 #include "Tab.h"
 #include "State.h"
 #include "Input.h"
+#include "tabs/MidiTab.h"
+#include "tabs/ControlTab.h"
+#include "tabs/ConfigTab.h"
 
 Display display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 State state;
@@ -23,7 +26,7 @@ void setup()
   display.println("PEDALYZE");
   display.display();
 
-  Tab *tabs[MAX_TABS] = {new TestTab()};
+  Tab *tabs[MAX_TABS] = {new ControlTab(), new MidiTab(), new ConfigTab(), new TestTab()};
 
   menu.init(&state, tabs, MAX_TABS);
 }
@@ -31,7 +34,12 @@ void setup()
 void loop()
 {
   menu.loop();
-  input.sense();
+  InputEvent inputEvent = input.sense();
+
+  if (state.tabId <= 2 || inputEvent.menuSwitchPositionChanged)
+  { // allow for test tabs
+    state.tabId = inputEvent.menuSwitchPosition;
+  }
 
   Tab *tab = menu.getCurrentTab();
 
