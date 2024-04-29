@@ -31,7 +31,6 @@ public:
     encoderDelta = 0;
     encoderButtonClicks = 0;
     encoderButtonDoubleClicks = 0;
-    menuSwitchPosition = 0;
     menuSwitchPositionChanged = false;
     menuSwitchReading = 0;
 
@@ -71,9 +70,37 @@ public:
   Encoder encoder = Encoder(ENCODER_DT, ENCODER_CLK);
   InputEvent event;
 
+  void init()
+  {
+    pinMode(ENCODER_SW, INPUT);
+  }
+
   InputEvent sense()
   {
-    event.encoderDelta += encoder.readAndReset();
+    long time = millis();
+
+    // This workaround is needed because the program is reading the half pulses of the encoder
+    int reading = encoder.readAndReset();
+    static bool processEncoder = true;
+    if (reading != 0)
+    {
+      if (processEncoder)
+      {
+        event.encoderDelta += reading;
+        processEncoder = false;
+      }
+      else
+        processEncoder = true;
+    }
+
+    bool encoderButtonPressed = digitalRead(ENCODER_SW) == LOW;
+    if (encoderButtonPressed && time - event.encoderButtonLastPress > 100)
+    {
+      event.encoderButtonClicks++;
+      if (time - event.encoderButtonLastPress < 300)
+        event.encoderButtonDoubleClicks++;
+      event.encoderButtonLastPress = time;
+    }
 
     int menuSwitchReading = analogRead(MENU_SWITCH);
     int readingLimit1 = 1024 / 3;

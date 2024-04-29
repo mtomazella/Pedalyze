@@ -36,7 +36,7 @@ void loop()
   menu.loop();
   InputEvent inputEvent = input.sense();
 
-  if (state.tabId <= 2 || inputEvent.menuSwitchPositionChanged)
+  if (inputEvent.menuSwitchPositionChanged)
   { // allow for test tabs
     state.tabId = inputEvent.menuSwitchPosition;
   }

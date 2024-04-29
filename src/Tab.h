@@ -34,17 +34,8 @@ public:
   {
     InputEvent event = input->process();
 
-    static bool processEncoder = true;
     if (event.encoderDelta != 0)
-    {
-      if (processEncoder) // Why? Don't ask
-      {
-        state->T_xOffset += event.encoderDelta;
-        processEncoder = false;
-      }
-      else
-        processEncoder = true;
-    }
+      state->T_xOffset += event.encoderDelta;
 
     state->menuSwitchPosition = event.menuSwitchPosition;
     state->menuSwitchReading = event.menuSwitchReading;
@@ -52,14 +43,6 @@ public:
 
   void draw(State *state, Display *display)
   {
-    // display->setTextSize(2);
-    // display->fillScreen(BLACK);
-    // display->setTextColor(WHITE);
-    // display->setCursor(0, 28);
-    // display->println(millis());
-    // display->display();
-
-    // circle at the center of the screen
     display->clearDisplay();
     display->fillScreen(WHITE);
     display->setTextSize(1);
