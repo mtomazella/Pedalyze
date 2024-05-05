@@ -4,12 +4,12 @@
 #include "Tab.h"
 #include "State.h"
 
-#define menuSize1 3
+#define menuSize1 2
 
 class ConfigTab : public Tab
 {
 private:
-  char *menuItems[menuSize1] = {"Test 1", "Test 2", "Test 3"};
+  char *menuItems[menuSize1] = {ENCODER_TEST_TAB_NAME, MIDI_TEST_TAB_NAME};
 
 public:
   void setup(State *state) {}
@@ -28,7 +28,7 @@ public:
       state->Cf_menuPosition1 = menuSize1 - 1;
     }
 
-    if (event.encoderButtonClicks > 0)
+    if (event.encoderButton.clicks > 0)
     {
       state->tabId = 3 + state->Cf_menuPosition1;
       return;
@@ -42,9 +42,7 @@ public:
     display->setTextColor(WHITE);
     display->setTextSize(1);
     display->setCursor(0, 0);
-    display->print("Configuracoes");
-    display->print(" ");
-    display->print(state->T_xOffset);
+    display->print(CONFIG_TAB_NAME);
     display->setTextSize(2);
     display->setCursor(0, SCREEN_HEIGHT / 2 - 10);
     display->print(menuItems[state->Cf_menuPosition1]);

@@ -24,36 +24,3 @@ public:
 
   virtual void draw(State *state, Display *display);
 };
-
-class TestTab : public Tab
-{
-public:
-  void setup(State *state) {}
-
-  void processInput(State *state, Input *input)
-  {
-    InputEvent event = input->process();
-
-    if (event.encoderDelta != 0)
-      state->T_xOffset += event.encoderDelta;
-
-    state->menuSwitchPosition = event.menuSwitchPosition;
-    state->menuSwitchReading = event.menuSwitchReading;
-  }
-
-  void draw(State *state, Display *display)
-  {
-    display->clearDisplay();
-    display->fillScreen(WHITE);
-    display->setTextSize(1);
-    display->setTextColor(BLACK);
-    display->setCursor(0, 0);
-    display->print(state->T_xOffset);
-    display->print(' ');
-    display->print(state->menuSwitchPosition);
-    display->print(' ');
-    display->print(state->menuSwitchReading);
-    display->fillCircle(SCREEN_WIDTH / 2 + state->T_xOffset, SCREEN_HEIGHT / 2, 10, BLACK);
-    display->display();
-  }
-};

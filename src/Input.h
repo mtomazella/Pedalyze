@@ -3,17 +3,60 @@
 #include "Encoder.h"
 #include "config.h"
 
+class ButtonEvent
+{
+public:
+  long lastPress = 0;
+  long lastRelease = 0;
+  bool holding = false;
+  int clicks = 0;
+  int doubleClicks = 0; // TODO: not implemented yet
+  int holdClicks = 0;
+
+  ButtonEvent()
+  {
+    lastPress = 0;
+    lastRelease = 0;
+    holding = false;
+    clicks = 0;
+    doubleClicks = 0;
+    holdClicks = 0;
+  }
+
+  void clean()
+  {
+    clicks = 0;
+    doubleClicks = 0;
+    holdClicks = 0;
+  }
+
+  ButtonEvent copy()
+  {
+    ButtonEvent copiedEvent;
+    copiedEvent.lastPress = this->lastPress;
+    copiedEvent.lastRelease = this->lastRelease;
+    copiedEvent.holding = this->holding;
+    copiedEvent.clicks = this->clicks;
+    copiedEvent.doubleClicks = this->doubleClicks;
+    copiedEvent.holdClicks = this->holdClicks;
+    return copiedEvent;
+  }
+};
+
 class InputEvent
 {
 public:
   long lastProcessed = 0;
+
   int encoderDelta = 0;
-  long encoderButtonLastPress = 0;
-  int encoderButtonClicks = 0;
-  int encoderButtonDoubleClicks = 0;
+  ButtonEvent encoderButton = ButtonEvent();
+
   long matrixLastPresses[MATRIX_LENGTH];
+  long matrixLastReleases[MATRIX_LENGTH];
+  bool matrixHolding[MATRIX_LENGTH];
   int matrixClicks[MATRIX_LENGTH];
   int matrixDoubleClicks[MATRIX_LENGTH];
+
   int menuSwitchPosition = 0;
   bool menuSwitchPositionChanged = false;
   int menuSwitchReading = 0;
@@ -29,8 +72,7 @@ public:
   void clean()
   {
     encoderDelta = 0;
-    encoderButtonClicks = 0;
-    encoderButtonDoubleClicks = 0;
+    encoderButton.clean();
     menuSwitchPositionChanged = false;
     menuSwitchReading = 0;
 
@@ -46,9 +88,7 @@ public:
     InputEvent copiedEvent;
     copiedEvent.lastProcessed = this->lastProcessed;
     copiedEvent.encoderDelta = this->encoderDelta;
-    copiedEvent.encoderButtonLastPress = this->encoderButtonLastPress;
-    copiedEvent.encoderButtonClicks = this->encoderButtonClicks;
-    copiedEvent.encoderButtonDoubleClicks = this->encoderButtonDoubleClicks;
+    copiedEvent.encoderButton = this->encoderButton.copy();
     copiedEvent.menuSwitchPosition = this->menuSwitchPosition;
     copiedEvent.menuSwitchPositionChanged = this->menuSwitchPositionChanged;
     copiedEvent.menuSwitchReading = this->menuSwitchReading;
@@ -94,12 +134,35 @@ public:
     }
 
     bool encoderButtonPressed = digitalRead(ENCODER_SW) == LOW;
-    if (encoderButtonPressed && time - event.encoderButtonLastPress > 100)
+    if (encoderButtonPressed)
     {
-      event.encoderButtonClicks++;
-      if (time - event.encoderButtonLastPress < 300)
-        event.encoderButtonDoubleClicks++;
-      event.encoderButtonLastPress = time;
+      event.encoderButton.holding = true;
+      if (event.encoderButton.lastRelease >= event.encoderButton.lastPress)
+      {
+        event.encoderButton.lastPress = time;
+      }
+    }
+    else
+    {
+      event.encoderButton.holding = false;
+      if (event.encoderButton.lastPress > event.encoderButton.lastRelease)
+      {
+        int currentPressTime = event.encoderButton.lastPress;
+        int previousPressReleaseTime = event.encoderButton.lastRelease;
+        event.encoderButton.lastRelease = time;
+
+        if (currentPressTime - previousPressReleaseTime < DEBOUNCE_INTERVAL)
+        {
+        }
+        else if (time - currentPressTime > HOLD_CLICK_INTERVAL)
+        {
+          event.encoderButton.holdClicks++;
+        }
+        else
+        {
+          event.encoderButton.clicks++;
+        }
+      }
     }
 
     int menuSwitchReading = analogRead(MENU_SWITCH);

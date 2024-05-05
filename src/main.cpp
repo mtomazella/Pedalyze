@@ -8,6 +8,10 @@
 #include "tabs/ControlTab.h"
 #include "tabs/ConfigTab.h"
 
+#ifdef ENABLE_TEST_TABS
+#include "tabs/test/EncoderTestTab.h"
+#endif
+
 Display display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 State state;
 Menu menu;
@@ -26,7 +30,11 @@ void setup()
   display.println("PEDALYZE");
   display.display();
 
-  Tab *tabs[MAX_TABS] = {new ControlTab(), new MidiTab(), new ConfigTab(), new TestTab()};
+#ifdef ENABLE_TEST_TABS
+  Tab *tabs[MAX_TABS] = {new ControlTab(), new MidiTab(), new ConfigTab(), new EncoderTestTab()};
+#else
+  Tab *tabs[MAX_TABS] = {new ControlTab(), new MidiTab(), new ConfigTab()};
+#endif
 
   menu.init(&state, tabs, MAX_TABS);
 }
