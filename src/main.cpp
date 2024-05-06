@@ -10,6 +10,7 @@
 
 #ifdef ENABLE_TEST_TABS
 #include "tabs/test/EncoderTestTab.h"
+#include "tabs/test/MidiTestTab.h"
 #endif
 
 Display display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
@@ -31,7 +32,7 @@ void setup()
   display.display();
 
 #ifdef ENABLE_TEST_TABS
-  Tab *tabs[MAX_TABS] = {new ControlTab(), new MidiTab(), new ConfigTab(), new EncoderTestTab()};
+  Tab *tabs[MAX_TABS] = {new ControlTab(), new MidiTab(), new ConfigTab(), new EncoderTestTab(), new MidiTestTab()};
 #else
   Tab *tabs[MAX_TABS] = {new ControlTab(), new MidiTab(), new ConfigTab()};
 #endif

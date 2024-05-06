@@ -18,4 +18,9 @@ public:
   bool ETT_holding = false;
   long ETT_lastPress = 0;
   long ETT_lastRelease = 0;
+
+  // Midi Test tab
+  int Mtt_midiNote = 60;
+  int Mtt_previousNote = 60;
+  bool Mtt_sending = false;
 };

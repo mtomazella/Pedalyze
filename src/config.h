@@ -25,7 +25,7 @@
 #define CONFIG_TAB_NAME "Config"
 
 #ifdef ENABLE_TEST_TABS
-#define MAX_TABS 4
+#define MAX_TABS 5
 
 #define ENCODER_TEST_TAB_MENU_ID 3
 #define ENCODER_TEST_TAB_NAME "Encoder Test"
