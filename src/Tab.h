@@ -24,3 +24,16 @@ public:
 
   virtual void draw(State *state, Display *display);
 };
+
+bool goBackOnHold(InputEvent *event, State *state)
+{
+  if (event->encoderButton.holdClicks >= 1)
+  {
+    state->changeTab(state->previousTabId);
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}

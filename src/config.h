@@ -25,16 +25,27 @@
 #define CONFIG_TAB_NAME "Config"
 
 #ifdef ENABLE_TEST_TABS
-#define MAX_TABS 5
+#define MAX_TABS 6
 
 #define ENCODER_TEST_TAB_MENU_ID 3
 #define ENCODER_TEST_TAB_NAME "Encoder Test"
 #define MIDI_TEST_TAB_MENU_ID 4
 #define MIDI_TEST_TAB_NAME "MIDI Test"
+#define MATRIX_TEST_TAB_MENU_ID 5
+#define MATRIX_TEST_TAB_NAME "Matrix Test"
 #endif
 
 // Matrix
+#define MATRIX_HEIGHT 3
+#define MATRIX_WIDTH 4
 #define MATRIX_LENGTH 12
+#define COL1 7
+#define COL2 1
+#define COL3 5
+#define COL4 2
+#define ROW1 3
+#define ROW2 4
+#define ROW3 6
 
 // Encoder
 #define ENCODER_OPTIMIZE_INTERRUPTS

@@ -32,20 +32,20 @@ public:
     display->print("C: ");
     display->print(state->ETT_clicks);
     display->setCursor(0, 20);
-    display->print("DC: ");
-    display->print(state->ETT_doubleClicks);
-    display->setCursor(0, 30);
     display->print("HC: ");
     display->print(state->ETT_holdClicks);
-    display->setCursor(0, 40);
+    display->setCursor(0, 30);
     display->print("H: ");
     display->print(state->ETT_holding);
-    display->setCursor(0, 50);
+    display->setCursor(0, 40);
     display->print("LP: ");
     display->print(state->ETT_lastPress);
-    display->setCursor(0, 60);
+    display->setCursor(0, 50);
     display->print("LR: ");
     display->print(state->ETT_lastRelease);
+    display->setCursor(0, 60);
+    display->print("T: ");
+    display->print(millis());
     display->display();
   }
 };

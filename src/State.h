@@ -1,11 +1,13 @@
 #pragma once
 
 #include "config.h"
+#include "ButtonEvent.h"
 
 class State
 {
 public:
   int tabId = INITIAL_TAB;
+  int previousTabId = INITIAL_TAB;
 
   // Config tab
   int Cf_menuPosition1 = 0;
@@ -23,4 +25,13 @@ public:
   int Mtt_midiNote = 60;
   int Mtt_previousNote = 60;
   bool Mtt_sending = false;
+
+  // Matrix Test tab
+  bool Mxt_buttonsHolding[MATRIX_LENGTH];
+
+  void changeTab(int tabId)
+  {
+    previousTabId = this->tabId;
+    this->tabId = tabId;
+  }
 };

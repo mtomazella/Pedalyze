@@ -11,6 +11,7 @@
 #ifdef ENABLE_TEST_TABS
 #include "tabs/test/EncoderTestTab.h"
 #include "tabs/test/MidiTestTab.h"
+#include "tabs/test/MatrixTestTab.h"
 #endif
 
 Display display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
@@ -32,12 +33,13 @@ void setup()
   display.display();
 
 #ifdef ENABLE_TEST_TABS
-  Tab *tabs[MAX_TABS] = {new ControlTab(), new MidiTab(), new ConfigTab(), new EncoderTestTab(), new MidiTestTab()};
+  Tab *tabs[MAX_TABS] = {new ControlTab(), new MidiTab(), new ConfigTab(), new EncoderTestTab(), new MidiTestTab(), new MatrixTestTab()};
 #else
   Tab *tabs[MAX_TABS] = {new ControlTab(), new MidiTab(), new ConfigTab()};
 #endif
 
   menu.init(&state, tabs, MAX_TABS);
+  input.init();
 }
 
 void loop()
@@ -47,7 +49,7 @@ void loop()
 
   if (inputEvent.menuSwitchPositionChanged)
   { // allow for test tabs
-    state.tabId = inputEvent.menuSwitchPosition;
+    state.changeTab(inputEvent.menuSwitchPosition);
   }
 
   Tab *tab = menu.getCurrentTab();

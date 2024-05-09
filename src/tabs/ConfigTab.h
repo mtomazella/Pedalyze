@@ -4,12 +4,12 @@
 #include "Tab.h"
 #include "State.h"
 
-#define menuSize1 2
+#define menuSize1 3
 
 class ConfigTab : public Tab
 {
 private:
-  char *menuItems[menuSize1] = {ENCODER_TEST_TAB_NAME, MIDI_TEST_TAB_NAME};
+  char *menuItems[menuSize1] = {ENCODER_TEST_TAB_NAME, MIDI_TEST_TAB_NAME, MATRIX_TEST_TAB_NAME};
 
 public:
   void setup(State *state) {}
@@ -30,7 +30,7 @@ public:
 
     if (event.encoderButton.clicks > 0)
     {
-      state->tabId = 3 + state->Cf_menuPosition1;
+      state->changeTab(3 + state->Cf_menuPosition1);
       return;
     }
   }
