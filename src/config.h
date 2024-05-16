@@ -55,3 +55,23 @@
 
 // Menu switch
 #define MENU_SWITCH 9
+
+// Channels
+#define MAX_CHANNELS 5
+#define CH1 21
+#define CH2 20
+#define CH3 19
+#define CH4 18
+#define CH5 10
+/*
+  Vo = (VR2)/(R1+R2)
+  V = 5V
+  R1 = 100k
+  R2 = 39k
+  Vo = (39k)/(100k+39k) * 5V = 1.95V
+  This is the amount lost to the voltage divider
+  P = 1023/5V = 204.6
+  1.95V * 204.6 = 399.57
+*/
+// #define CHANNEL_LOWER_LIMIT 400
+#define CHANNEL_LOWER_LIMIT 15

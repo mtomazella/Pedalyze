@@ -1,3 +1,4 @@
+#pragma once
 #include "MIDIUSB.h"
 
 void noteOn(byte channel, byte pitch, byte velocity)

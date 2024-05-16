@@ -15,6 +15,8 @@ public:
 
   bool matrixButtonsHolding[MATRIX_LENGTH];
 
+  int channelValues[MAX_CHANNELS];
+
   int menuSwitchPosition = 0;
   bool menuSwitchPositionChanged = false;
   int menuSwitchReading = 0;
@@ -35,6 +37,10 @@ public:
     {
       matrixButtonsHolding[i] = false;
     }
+    for (int i = 0; i < MAX_CHANNELS; i++)
+    {
+      channelValues[i] = 0;
+    }
   }
 
   InputEvent copy()
@@ -52,6 +58,11 @@ public:
       copiedEvent.matrixButtonsHolding[i] = this->matrixButtonsHolding[i];
     }
 
+    for (int i = 0; i < MAX_CHANNELS; i++)
+    {
+      copiedEvent.channelValues[i] = this->channelValues[i];
+    }
+
     return copiedEvent;
   }
 };
@@ -62,6 +73,10 @@ public:
   Encoder encoder = Encoder(ENCODER_DT, ENCODER_CLK);
   InputEvent event;
   Adafruit_MCP23X08 mcp = Adafruit_MCP23X08();
+  int rows[MATRIX_HEIGHT] = {ROW1, ROW2, ROW3};
+  int cols[MATRIX_WIDTH] = {COL1, COL2, COL3, COL4};
+  // int channels[MAX_CHANNELS] = {CH1, CH2, CH3, CH4, CH5};
+  int channels[MAX_CHANNELS] = {CH1, CH2};
 
   void init()
   {
@@ -71,9 +86,17 @@ public:
     Serial.print("MCP23008 begin result: ");
     Serial.println(result);
 
-    for (int i = 0; i < MATRIX_LENGTH; i++)
+    for (int i = 0; i < MATRIX_WIDTH; i++)
     {
-      mcp.pinMode(i, INPUT_PULLUP);
+      mcp.pinMode(cols[i], INPUT_PULLUP);
+    }
+    for (int i = 0; i < MATRIX_HEIGHT; i++)
+    {
+      mcp.pinMode(rows[i], OUTPUT);
+    }
+    for (int i = 0; i < MAX_CHANNELS; i++)
+    {
+      pinMode(channels[i], INPUT_PULLUP);
     }
   }
 
@@ -81,6 +104,7 @@ public:
   {
     unsigned long time = millis();
 
+    // --------- ENCODER READING
     // This workaround is needed because the program is reading the half pulses of the encoder
     int reading = encoder.readAndReset();
     static bool processEncoder = true;
@@ -94,7 +118,9 @@ public:
       else
         processEncoder = true;
     }
+    // ---------
 
+    // --------- ENCODER BUTTON READING
     bool encoderButtonPressed = digitalRead(ENCODER_SW) == LOW;
     if (encoderButtonPressed)
     {
@@ -125,14 +151,34 @@ public:
           event.encoderButton.clicks++;
         }
       }
-
-      for (int i = 0; i < 8; i++)
-      {
-        bool buttonPressed = mcp.digitalRead(i) == LOW;
-        event.matrixButtonsHolding[i] = buttonPressed;
-      }
     }
+    // ---------
 
+    // --------- MATRIX READING
+    for (int i = 0; i < MATRIX_HEIGHT; i++)
+    {
+      mcp.digitalWrite(rows[i], LOW);
+      for (int j = 0; j < MATRIX_WIDTH; j++)
+      {
+        mcp.digitalWrite(cols[j], HIGH);
+        bool buttonPressed = mcp.digitalRead(cols[j]) == LOW;
+        event.matrixButtonsHolding[i * MATRIX_WIDTH + j] = buttonPressed;
+      }
+      mcp.digitalWrite(rows[i], HIGH);
+    }
+    // ---------
+
+    // --------- CHANNELS READING
+    for (int i = 0; i < MAX_CHANNELS; i++)
+    {
+      int reading = 1023 - analogRead(channels[i]);
+      reading = map(reading <= CHANNEL_LOWER_LIMIT ? 0 : reading, 0, 1023, 0, 127);
+      Serial.println(reading);
+      event.channelValues[i] = reading;
+    }
+    // ---------
+
+    // --------- MENU SWITCH READING
     int menuSwitchReading = analogRead(MENU_SWITCH);
     int readingLimit1 = 1024 / 3;
     int readingLimit2 = 1024 / 3 * 2;
@@ -144,6 +190,7 @@ public:
     event.menuSwitchPositionChanged = event.menuSwitchPosition != newMenuSwitchPosition;
     event.menuSwitchPosition = newMenuSwitchPosition;
     event.menuSwitchReading = menuSwitchReading;
+    // ---------
 
     return event.copy();
   }

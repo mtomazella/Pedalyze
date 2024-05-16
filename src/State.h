@@ -25,6 +25,7 @@ public:
   int Mtt_midiNote = 60;
   int Mtt_previousNote = 60;
   bool Mtt_sending = false;
+  int Mtt_channelValues[MAX_CHANNELS];
 
   // Matrix Test tab
   bool Mxt_buttonsHolding[MATRIX_LENGTH];
