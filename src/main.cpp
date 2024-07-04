@@ -4,6 +4,7 @@
 #include "Tab.h"
 #include "State.h"
 #include "Input.h"
+#include "midi.h"
 #include "tabs/MidiTab.h"
 #include "tabs/ControlTab.h"
 #include "tabs/ConfigTab.h"
@@ -60,4 +61,6 @@ void loop()
   {
     tab->draw(&state, &display);
   }
+
+  flushMidi();
 }

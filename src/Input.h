@@ -14,8 +14,10 @@ public:
   ButtonEvent encoderButton = ButtonEvent();
 
   bool matrixButtonsHolding[MATRIX_LENGTH];
+  bool matrixButtonsChangeMask[MATRIX_LENGTH];
 
   int channelValues[MAX_CHANNELS];
+  int channelValuesChangeMask[MAX_CHANNELS];
 
   int menuSwitchPosition = 0;
   bool menuSwitchPositionChanged = false;
@@ -75,8 +77,10 @@ public:
   Adafruit_MCP23X08 mcp = Adafruit_MCP23X08();
   int rows[MATRIX_HEIGHT] = {ROW1, ROW2, ROW3};
   int cols[MATRIX_WIDTH] = {COL1, COL2, COL3, COL4};
-  // int channels[MAX_CHANNELS] = {CH1, CH2, CH3, CH4, CH5};
-  int channels[MAX_CHANNELS] = {CH1, CH2};
+  int channels[MAX_CHANNELS] = {CH1, CH2, CH3, CH4, CH5};
+
+  bool matrixButtonsHoldingPrevious[MATRIX_LENGTH];
+  int channelValuesPrevious[MAX_CHANNELS];
 
   void init()
   {
@@ -98,6 +102,15 @@ public:
     {
       pinMode(channels[i], INPUT_PULLUP);
     }
+
+    for (int i = 0; i < MATRIX_LENGTH; i++)
+    {
+      matrixButtonsHoldingPrevious[i] = false;
+    }
+    for (int i = 0; i < MAX_CHANNELS; i++)
+    {
+      channelValuesPrevious[i] = 0;
+    }
   }
 
   InputEvent sense()
@@ -110,13 +123,13 @@ public:
     static bool processEncoder = true;
     if (reading != 0)
     {
-      if (processEncoder)
-      {
-        event.encoderDelta += reading;
-        processEncoder = false;
-      }
-      else
-        processEncoder = true;
+      event.encoderDelta += reading;
+      // if (processEncoder)
+      // {
+      //   processEncoder = false;
+      // }
+      // else
+      //   processEncoder = true;
     }
     // ---------
 
@@ -171,9 +184,12 @@ public:
     // --------- CHANNELS READING
     for (int i = 0; i < MAX_CHANNELS; i++)
     {
-      int reading = 1023 - analogRead(channels[i]);
-      reading = map(reading <= CHANNEL_LOWER_LIMIT ? 0 : reading, 0, 1023, 0, 127);
-      Serial.println(reading);
+      int reading = analogRead(channels[i]);
+      if (i == 0)
+        Serial.println(reading);
+      reading = map(reading <= CHANNEL_LOWER_LIMIT ? 0 : reading, CHANNEL_LOWER_LIMIT, CHANNEL_UPPER_LIMIT, 0, 127);
+      reading = reading > 127 ? 127 : reading;
+      reading = reading < 0 ? 0 : reading;
       event.channelValues[i] = reading;
     }
     // ---------
@@ -198,6 +214,18 @@ public:
   InputEvent process()
   {
     InputEvent newEvent = event.copy();
+
+    for (int i = 0; i < MATRIX_LENGTH; i++)
+    {
+      newEvent.matrixButtonsChangeMask[i] = newEvent.matrixButtonsHolding[i] != matrixButtonsHoldingPrevious[i];
+      matrixButtonsHoldingPrevious[i] = newEvent.matrixButtonsHolding[i];
+    }
+    for (int i = 0; i < MAX_CHANNELS; i++)
+    {
+      newEvent.channelValuesChangeMask[i] = newEvent.channelValues[i] != channelValuesPrevious[i];
+      channelValuesPrevious[i] = newEvent.channelValues[i];
+    }
+
     event.clean();
     event.lastProcessed = millis();
     return newEvent;

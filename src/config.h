@@ -1,7 +1,8 @@
 #pragma once
 
 // Macro config
-#define ENABLE_TEST_TABS
+// #define ENABLE_TEST_TABS
+#define ENABLE_MIDI_LOGS
 
 // Display
 #define SCREEN_WIDTH 128
@@ -72,6 +73,7 @@
   This is the amount lost to the voltage divider
   P = 1023/5V = 204.6
   1.95V * 204.6 = 399.57
+  1023 - 400 = 623
 */
-// #define CHANNEL_LOWER_LIMIT 400
-#define CHANNEL_LOWER_LIMIT 15
+#define CHANNEL_UPPER_LIMIT 800
+#define CHANNEL_LOWER_LIMIT 200

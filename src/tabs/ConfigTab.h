@@ -9,7 +9,11 @@
 class ConfigTab : public Tab
 {
 private:
+#ifdef ENABLE_TEST_TABS
   char *menuItems[menuSize1] = {ENCODER_TEST_TAB_NAME, MIDI_TEST_TAB_NAME, MATRIX_TEST_TAB_NAME};
+#else
+  char *menuItems[menuSize1] = {};
+#endif
 
 public:
   void setup(State *state) {}
