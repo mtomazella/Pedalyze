@@ -1,65 +1,69 @@
 #include "config.h"
-#include "Display.h"
-#include "Menu.h"
-#include "Tab.h"
 #include "State.h"
 #include "Input.h"
 #include "midi.h"
-#include "tabs/MidiTab.h"
-#include "tabs/ControlTab.h"
-#include "tabs/ConfigTab.h"
 
-#ifdef ENABLE_TEST_TABS
-#include "tabs/test/EncoderTestTab.h"
-#include "tabs/test/MidiTestTab.h"
-#include "tabs/test/MatrixTestTab.h"
-#endif
-
-Display display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 State state;
-Menu menu;
 Input input;
 
 void setup()
 {
   Serial.begin(9600);
 
-  display.init(SCREEN_ADDRESS);
-
-  display.setTextSize(2);
-  display.fillScreen(WHITE);
-  display.setTextColor(BLACK);
-  display.setCursor(0, 28);
-  display.println("PEDALYZE");
-  display.display();
-
-#ifdef ENABLE_TEST_TABS
-  Tab *tabs[MAX_TABS] = {new ControlTab(), new MidiTab(), new ConfigTab(), new EncoderTestTab(), new MidiTestTab(), new MatrixTestTab()};
-#else
-  Tab *tabs[MAX_TABS] = {new ControlTab(), new MidiTab(), new ConfigTab()};
-#endif
-
-  menu.init(&state, tabs, MAX_TABS);
   input.init();
 }
 
 void loop()
 {
-  menu.loop();
-  InputEvent inputEvent = input.sense();
+  input.sense();
+  InputEvent event = input.process();
 
-  if (inputEvent.menuSwitchPositionChanged)
-  { // allow for test tabs
-    state.changeTab(inputEvent.menuSwitchPosition);
+  bool isCc = event.menuSwitchPosition == 0;
+
+  for (int i = 0; i < MATRIX_LENGTH; i++)
+  {
+    if (!event.matrixButtonsChangeMask[i])
+      continue;
+    if (event.matrixButtonsHolding[i])
+    {
+#ifdef ENABLE_MIDI_LOGS
+      Serial.print("b");
+      Serial.println(i);
+#endif
+      noteOn(0, 60 + i, 127);
+    }
+    else
+    {
+#ifdef ENABLE_MIDI_LOGS
+      Serial.print("!b");
+      Serial.println(i);
+#endif
+      noteOff(0, 60 + i, 127);
+    }
   }
 
-  Tab *tab = menu.getCurrentTab();
-
-  tab->processInput(&state, &input);
-
-  if (menu.getCurrentTab()->shouldDraw(&state))
+  for (int i = 0; i < MAX_CHANNELS; i++)
   {
-    tab->draw(&state, &display);
+    if (!event.channelValuesChangeMask[i])
+      continue;
+    if (event.channelValues[i] > 0)
+    {
+#ifdef ENABLE_MIDI_LOGS
+      Serial.print("c");
+      Serial.print(i);
+      Serial.print(" ");
+      Serial.println(event.channelValues[i]);
+#endif
+      noteOn(0, 60 + i, event.channelValues[i]);
+    }
+    else
+    {
+#ifdef ENABLE_MIDI_LOGS
+      Serial.print("!c");
+      Serial.println(i);
+#endif
+      noteOff(0, 60 + i, 0);
+    }
   }
 
   flushMidi();

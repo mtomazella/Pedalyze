@@ -117,6 +117,7 @@ public:
   {
     unsigned long time = millis();
 
+#ifndef DISABLE_ENCODER
     // --------- ENCODER READING
     // This workaround is needed because the program is reading the half pulses of the encoder
     int reading = encoder.readAndReset();
@@ -166,6 +167,7 @@ public:
       }
     }
     // ---------
+#endif
 
     // --------- MATRIX READING
     for (int i = 0; i < MATRIX_HEIGHT; i++)
@@ -184,9 +186,7 @@ public:
     // --------- CHANNELS READING
     for (int i = 0; i < MAX_CHANNELS; i++)
     {
-      int reading = analogRead(channels[i]);
-      if (i == 0)
-        Serial.println(reading);
+      int reading = 1023 - analogRead(channels[i]);
       reading = map(reading <= CHANNEL_LOWER_LIMIT ? 0 : reading, CHANNEL_LOWER_LIMIT, CHANNEL_UPPER_LIMIT, 0, 127);
       reading = reading > 127 ? 127 : reading;
       reading = reading < 0 ? 0 : reading;

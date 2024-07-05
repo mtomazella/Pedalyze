@@ -2,7 +2,8 @@
 
 // Macro config
 // #define ENABLE_TEST_TABS
-#define ENABLE_MIDI_LOGS
+// #define ENABLE_MIDI_LOGS
+#define DISABLE_ENCODER
 
 // Display
 #define SCREEN_WIDTH 128
